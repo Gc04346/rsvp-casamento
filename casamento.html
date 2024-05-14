@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Isabella e Daniel - RSVP</title>
+    <link rel="icon" type="image/png" href="https://cdn0.iconfinder.com/data/icons/small-n-flat/24/678087-heart-512.png">
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f8f9fa;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background: linear-gradient(0deg, #ffffff 0%, #ffd1ea 66%);
+            border-radius: 10px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+
+        label {
+            font-weight: bold;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+        }
+
+        select {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+        }
+
+        button {
+            padding: 10px 20px;
+            margin-right: 10px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        #marcaPresenca {
+            background-color: #28a745;
+            color: #fff;
+        }
+
+        #marcaAusencia {
+            background-color: #dc3545;
+            color: #fff;
+        }
+    </style>
+    <script src="https://apis.google.com/js/api.js"></script>
+</head>
+<body style="background-image: url('https://www.southernliving.com/thmb/_DTHAquZBLEHKLIgPi_C3fFIhNo=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/GettyImages-929904308-aeeb687413714dacace50062cece530a.jpg')">
+<div class="container">
+    <div style="    display: flex;
+    flex-direction: column;
+    align-items: center;
+">
+        <h1 style="font-family: cursive">Isabella e Daniel</h1>
+        <h2 style="color:hotpink; font-family: cursive"><img
+                src="https://e7.pngegg.com/pngimages/892/187/png-clipart-solar-calendar-symbol-computer-icons-encapsulated-postscript-calendar-icon-miscellaneous-text-thumbnail.png"
+                alt="calendarIcon" width="20px" style="margin-bottom: 5px; margin-right: 5px;">07•09•2024</h2>
+        <h2 style="font-family: cursive"><a target="_blank"
+                                            href="https://www.google.com.br/maps/dir//Lake+House+-+Pampulha+-+Av.+Otac%C3%ADlio+Negr%C3%A3o+de+Lima,+11447+-+Pampulha,+Belo+Horizonte+-+MG,+31365-450/@-19.8481163,-43.9997025,17z/data=!4m9!4m8!1m0!1m5!1m1!1s0xa691a2c1ee89f7:0x7d2a586bf28b8002!2m2!1d-43.9971032!2d-19.8480737!3e0?entry=ttu"><img
+                src="https://cdn-icons-png.flaticon.com/512/535/535239.png" width="20px"
+                style="margin-bottom: 5px; margin-right: 5px;" alt="locationIcon">Lake House - Pampulha</a></h2>
+        <h2 style="    font-family: cursive;
+    text-align: center;
+    padding-left: 50px;
+    padding-right: 50px;">Será uma honra comemorar a realização desse sonho com você!</h2>
+    </div>
+    <h3>Para confirmar sua presença, siga os passos a seguir:</h3>
+    <br>
+    <h5>1. Digite o seu nome completo abaixo.</h5>
+    <h5>2. Selecione o nome correto na lista apresentada.</h5>
+    <h5>3. Confirme sua presença clicando no botão correspondente.</h5>
+    <h5>4. Cuidado para não confirmar a presença de outros convidados!</h5>
+    <br>
+    <form>
+        <div class="form-group">
+            <label for="inputNome">Digite o seu nome completo:</label>
+            <input type="text" class="form-control" id="inputNome" oninput="popularSelect()">
+        </div>
+        <div class="form-group" id="selectNomesDiv">
+            <label id="selectNomesLabel" for="selectNomes">Selecione o convidado:</label>
+            <select class="form-control" id="selectNomes"></select>
+            <div class="row">
+                <div class="col-sm-6 mb-3 mb-sm-0">
+                    <button type="button" class="btn btn-success btn-block" id="marcaPresenca"
+                            onclick="marcarPresenca()">Confirmar presença
+                    </button>
+                </div>
+                <div class="col-sm-6">
+                    <button type="button" class="btn btn-danger btn-block" id="marcaAusencia"
+                            onclick="marcarAusencia()">Não poderei comparecer
+                    </button>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+<script>
+    const MY_API_KEY = 'AIzaSyAp2iAtEZdmPBAA_tG6abk_kKZdUx_HVrI'
+    const ID_DA_PLANILHA = '1yXD4IlZKUe3exLI31maoS82vNBD7vrmHqfkJbUP0FwI'
+
+    // Função para verificar se o nome inserido está na lista e popular o select com os nomes encontrados
+    function popularSelect() {
+        const inputNome = document.getElementById("inputNome").value.toLowerCase();
+        const limiar = 2; // Limiar de similaridade
+        const selectNomes = document.getElementById("selectNomes");
+        selectNomes.innerHTML = ""; // Limpar options anteriores
+
+        // Verificar o nome inserido e obter todas as ocorrências onde a distância é menor ou igual ao limiar
+        const resultados = verificarNome(inputNome, listaNomes, limiar);
+
+        if (resultados.length > 0) {
+            // Adicionar options ao select com os nomes encontrados
+            resultados.forEach(resultado => {
+                let texto = resultado.nome;
+                if (resultado.presente === null) {
+                    texto += " (pendente confirmação)";
+                } else if (resultado.presente === false) {
+                    texto += " (ausência confirmada)";
+                } else {
+                    texto += " (presença confirmada!)";
+                }
+                const option = document.createElement("option");
+                option.text = texto;
+                option.value = resultado.id;
+                selectNomes.add(option);
+            });
+        } else {
+            const option = document.createElement("option");
+            option.text = "Nenhum nome encontrado";
+            selectNomes.add(option);
+        }
+        selectNomesDiv.style.setProperty('display', 'block')
+    }
+
+    // Função para marcar a presença de uma pessoa com base no id
+    const marcarPresenca = async () => {
+        const selectNomes = document.getElementById("selectNomes");
+        const selectedId = parseInt(selectNomes.value);
+
+        if (!isNaN(selectedId)) {
+            const pessoa = listaNomes.find(item => item.id === selectedId);
+            if (pessoa) {
+                if (pessoa.presente !== null) {
+                    alert("Presença desse convidado já foi confirmada.");
+                } else {
+                    if (confirm("Deseja confirmar a presença de " + pessoa.nome + "? Será uma honra ter você participando do nosso grande dia conosco!")) {
+                        pessoa.presente = true;
+                        popularSelect(); // Atualiza o select após confirmar a presença
+                        const worked = await atualizarPresencaNaPlanilha(pessoa.nome, true); // Atualiza a presença na planilha
+                        if (!worked) {
+                            alert("Erro ao atualizar a presença na planilha.");
+                        } else {
+                            alert("Que bom que você poderá comparecer! Sua presença foi confirmada.")
+                        }
+                    }
+                }
+            } else {
+                alert("ID não encontrado na lista de nomes.");
+            }
+        } else {
+            alert("Selecione um nome antes de confirmar a presença.");
+        }
+    }
+
+    // Função para marcar a ausência de uma pessoa com base no id
+    const marcarAusencia = async () => {
+        const selectNomes = document.getElementById("selectNomes");
+        const selectedId = parseInt(selectNomes.value);
+
+        if (!isNaN(selectedId)) {
+            const pessoa = listaNomes.find(item => item.id === selectedId);
+            if (pessoa) {
+                if (pessoa.presente !== null) {
+                    alert("Presença desse convidado já foi confirmada.");
+                } else {
+                    if (confirm("Tem certeza de que deseja marcar a ausência de " + pessoa.nome + "? Sentiremos a sua falta!")) {
+                        pessoa.presente = false;
+                        popularSelect(); // Atualiza o select após marcar a ausência
+                        const worked = await atualizarPresencaNaPlanilha(pessoa.nome, false); // Atualiza a presença na planilha
+                        if (!worked) {
+                            alert("Erro ao atualizar a presença na planilha.");
+                        } else {
+                            alert("Que pena que você não poderá comparecer!")
+                        }
+                        //alert("Que pena que você não poderá comparecer! Se desejar, deixe uma mensagem de carinho para nós abaixo!")
+                    }
+                }
+            } else {
+                alert("ID não encontrado na lista de nomes.");
+            }
+        } else {
+            alert("Selecione um nome antes de marcar a ausência.");
+        }
+    }
+
+    // Lista de nomes com objetos contendo id, nome completo e booleano de presença
+    var listaNomes = [];
+
+    // Função para verificar se o nome inserido está na lista e retornar todas as ocorrências onde a distância é menor ou igual ao limiar
+    function verificarNome(nomeInserido, listaNomes, limiar) {
+        const resultados = [];
+        for (let i = 0; i < listaNomes.length; i++) {
+            const distancia = levenshteinDistance(nomeInserido, listaNomes[i].nome.toLowerCase());
+            if (distancia <= limiar) {
+                resultados.push(listaNomes[i]);
+            }
+        }
+        return resultados;
+    }
+
+    // Função para calcular a distância de Levenshtein entre duas strings
+    function levenshteinDistance(s1, s2) {
+        const len1 = s1.length;
+        const len2 = s2.length;
+
+        const matrix = [];
+
+        // Inicializar a matriz
+        for (let i = 0; i <= len1; i++) {
+            matrix[i] = [i];
+        }
+        for (let j = 0; j <= len2; j++) {
+            matrix[0][j] = j;
+        }
+
+        // Calcular a distância de Levenshtein
+        for (let j = 1; j <= len2; j++) {
+            for (let i = 1; i <= len1; i++) {
+                if (s1[i - 1] === s2[j - 1]) {
+                    matrix[i][j] = matrix[i - 1][j - 1];
+                } else {
+                    matrix[i][j] = Math.min(
+                        matrix[i - 1][j - 1] + 1, // Substituição
+                        matrix[i][j - 1] + 1,     // Inserção
+                        matrix[i - 1][j] + 1      // Remoção
+                    );
+                }
+            }
+        }
+
+        return matrix[len1][len2];
+    }
+
+    // Função para atualizar a presença na planilha do Google Sheets
+    const atualizarPresencaNaPlanilha = async (nome, presente) => {
+        const valor = presente ? 'CONFIRMADO' : "AUSENTE";
+        const jotFormsApiKey = '7ecea15866e65acfb16a2a0e3451ce8f'
+        const jotFormsFormId = '241338371376055'
+
+        const apiUrl = `https://api.jotform.com/form/${jotFormsFormId}/submissions?apiKey=${jotFormsApiKey}`;
+        const formData = new FormData();
+        formData.append('submission[6]', nome);
+        formData.append('submission[5]', valor);
+
+        const requestOptions = {
+            method: 'POST',
+            body: formData,
+        };
+        try {
+            const response = await fetch(apiUrl, requestOptions)
+            return response.ok;
+        } catch (e) {
+            return false
+        }
+    }
+
+    var selectNomesDiv = document.getElementById('selectNomesDiv');
+
+    window.onload = function () {
+        selectNomesDiv.style.setProperty('display', 'none');
+        gapi.load('client', initClient);
+
+// Inicializa a API do Google Sheets
+        function initClient() {
+            gapi.client.init({
+                apiKey: MY_API_KEY,
+                discoveryDocs: ["https://sheets.googleapis.com/$discovery/rest?version=v4"],
+            }).then(function () {
+                // Após a inicialização bem-sucedida, chame a função para carregar os dados da planilha
+                loadSheetData();
+            }, function (error) {
+                console.error('Erro ao inicializar a API do Google Sheets', error);
+            });
+        }
+
+        function loadSheetData() {
+            gapi.client.sheets.spreadsheets.values.get({
+                spreadsheetId: ID_DA_PLANILHA,
+                range: 'Total!A:I',
+            }).then(function (response) {
+                var range = response.result;
+                if (range.values.length > 0) {
+                    // Itera sobre os dados retornados e cria os objetos de convidados
+                    for (var i = 0; i < range.values.length; i++) {
+                        var row = range.values[i];
+                        // Supondo que a primeira coluna contenha os nomes dos convidados
+                        var nomeCompleto = row[0]; // Ajuste conforme necessário
+                        var presente = row[8];
+                        // Adicione o objeto do convidado à lista de nomes
+                        listaNomes.push({
+                            id: i + 1,
+                            nome: nomeCompleto,
+                            presente: presente === 'CONFIRMADO' ? true : presente === 'AUSENTE' ? false : null
+                        });
+                    }
+                } else {
+                    console.log('Não foram encontrados dados na planilha.');
+                }
+            }, function (error) {
+                console.error('Erro ao carregar os dados da planilha:', error);
+            });
+        }
+    }
+</script>
+
+</body>
+</html>
