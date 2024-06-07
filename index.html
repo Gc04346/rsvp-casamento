@@ -122,12 +122,11 @@
     // Função para verificar se o nome inserido está na lista e popular o select com os nomes encontrados
     function popularSelect() {
         const inputNome = document.getElementById("inputNome").value.toLowerCase();
-        const limiar = 2; // Limiar de similaridade
         const selectNomes = document.getElementById("selectNomes");
         selectNomes.innerHTML = ""; // Limpar options anteriores
 
         // Verificar o nome inserido e obter todas as ocorrências onde a distância é menor ou igual ao limiar
-        const resultados = verificarNome(inputNome, listaNomes, limiar);
+        const resultados = verificarNome(inputNome, listaNomes);
 
         if (resultados.length > 0) {
             // Adicionar options ao select com os nomes encontrados
@@ -217,49 +216,10 @@
     // Lista de nomes com objetos contendo id, nome completo e booleano de presença
     var listaNomes = [];
 
-    // Função para verificar se o nome inserido está na lista e retornar todas as ocorrências onde a distância é menor ou igual ao limiar
-    function verificarNome(nomeInserido, listaNomes, limiar) {
-        const resultados = [];
-        for (let i = 0; i < listaNomes.length; i++) {
-            const distancia = levenshteinDistance(nomeInserido, listaNomes[i].nome.toLowerCase());
-            if (distancia <= limiar) {
-                resultados.push(listaNomes[i]);
-            }
-        }
-        return resultados;
-    }
-
-    // Função para calcular a distância de Levenshtein entre duas strings
-    function levenshteinDistance(s1, s2) {
-        const len1 = s1.length;
-        const len2 = s2.length;
-
-        const matrix = [];
-
-        // Inicializar a matriz
-        for (let i = 0; i <= len1; i++) {
-            matrix[i] = [i];
-        }
-        for (let j = 0; j <= len2; j++) {
-            matrix[0][j] = j;
-        }
-
-        // Calcular a distância de Levenshtein
-        for (let j = 1; j <= len2; j++) {
-            for (let i = 1; i <= len1; i++) {
-                if (s1[i - 1] === s2[j - 1]) {
-                    matrix[i][j] = matrix[i - 1][j - 1];
-                } else {
-                    matrix[i][j] = Math.min(
-                        matrix[i - 1][j - 1] + 1, // Substituição
-                        matrix[i][j - 1] + 1,     // Inserção
-                        matrix[i - 1][j] + 1      // Remoção
-                    );
-                }
-            }
-        }
-
-        return matrix[len1][len2];
+    // Função para verificar se o nome inserido está na lista
+    function verificarNome(nomeInserido, listaNomes) {
+        let nomeSemEspaco = nomeInserido.trimStart();
+        return nomeSemEspaco ? listaNomes.filter(convidado => convidado.nome.toLowerCase().includes(nomeSemEspaco)) : [];
     }
 
     // Função para atualizar a presença na planilha do Google Sheets
@@ -315,7 +275,7 @@
                     for (var i = 0; i < range.values.length; i++) {
                         var row = range.values[i];
                         // Supondo que a primeira coluna contenha os nomes dos convidados
-                        var nomeCompleto = row[0]; // Ajuste conforme necessário
+                        var nomeCompleto = `${row[0]} ${row[1]}`; // Ajuste conforme necessário
                         var presente = row[8];
                         // Adicione o objeto do convidado à lista de nomes
                         listaNomes.push({
