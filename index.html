@@ -4,7 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Isabella e Daniel - RSVP</title>
-    <link rel="icon" type="image/png" href="https://cdn0.iconfinder.com/data/icons/small-n-flat/24/678087-heart-512.png">
+    <link rel="icon" type="image/png"
+          href="https://cdn0.iconfinder.com/data/icons/small-n-flat/24/678087-heart-512.png">
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <style>
         body {
@@ -66,20 +67,12 @@
     </style>
     <script src="https://apis.google.com/js/api.js"></script>
 </head>
-<body style="background-image: url('https://www.southernliving.com/thmb/_DTHAquZBLEHKLIgPi_C3fFIhNo=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/GettyImages-929904308-aeeb687413714dacace50062cece530a.jpg')">
+<body>
 <div class="container">
     <div style="    display: flex;
     flex-direction: column;
     align-items: center;
 ">
-        <h1 style="font-family: cursive">Isabella e Daniel</h1>
-        <h2 style="color:hotpink; font-family: cursive"><img
-                src="https://e7.pngegg.com/pngimages/892/187/png-clipart-solar-calendar-symbol-computer-icons-encapsulated-postscript-calendar-icon-miscellaneous-text-thumbnail.png"
-                alt="calendarIcon" width="20px" style="margin-bottom: 5px; margin-right: 5px;">07•09•2024</h2>
-        <h2 style="font-family: cursive"><a target="_blank"
-                                            href="https://www.google.com.br/maps/dir//Lake+House+-+Pampulha+-+Av.+Otac%C3%ADlio+Negr%C3%A3o+de+Lima,+11447+-+Pampulha,+Belo+Horizonte+-+MG,+31365-450/@-19.8481163,-43.9997025,17z/data=!4m9!4m8!1m0!1m5!1m1!1s0xa691a2c1ee89f7:0x7d2a586bf28b8002!2m2!1d-43.9971032!2d-19.8480737!3e0?entry=ttu"><img
-                src="https://cdn-icons-png.flaticon.com/512/535/535239.png" width="20px"
-                style="margin-bottom: 5px; margin-right: 5px;" alt="locationIcon">Lake House - Pampulha</a></h2>
         <h2 style="    font-family: cursive;
     text-align: center;
     padding-left: 50px;
@@ -267,7 +260,7 @@
         function loadSheetData() {
             gapi.client.sheets.spreadsheets.values.get({
                 spreadsheetId: ID_DA_PLANILHA,
-                range: 'Total!A:I',
+                range: 'Total!A2:H',
             }).then(function (response) {
                 var range = response.result;
                 if (range.values.length > 0) {
@@ -275,8 +268,8 @@
                     for (var i = 0; i < range.values.length; i++) {
                         var row = range.values[i];
                         // Supondo que a primeira coluna contenha os nomes dos convidados
-                        var nomeCompleto = `${row[0]} ${row[1]}`; // Ajuste conforme necessário
-                        var presente = row[8];
+                        var nomeCompleto = `${row[0]}`; // Ajuste conforme necessário
+                        var presente = row[7];
                         // Adicione o objeto do convidado à lista de nomes
                         listaNomes.push({
                             id: i + 1,
